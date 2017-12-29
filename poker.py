@@ -47,16 +47,19 @@ def card_ranks(hand):
 
 def straight(ranks):
     '''
-    Return true if ranks are straight.
+    Return True if the ordered ranks form a 5-card straight.
     '''
-    return True
+    # return all(ranks[i] == ranks[i + 1] + 1 for i in range(len(ranks) - 1))
+    return max(ranks) - min(ranks) == 4 and len(set(ranks)) == 5
 
 
 def flush(hand):
     '''
-    Return true if hand is flush.
+    Return True if all the cards have the same suit.
     '''
-    return True
+    suits = [s for r, s in hand]
+    # return len(set(suits)) == 1
+    return suits.count(suits[0]) == len(suits)
 
 
 def kind(type, ranks):
