@@ -38,9 +38,11 @@ def hand_rank(hand):
 
 def card_ranks(hand):
     '''
-    Return card ranks.
+    Return a list of the ranks, sorted with higher first.
     '''
-    return []
+    ranks = ['--23456789TJQKA'.index(r) for r, s in hand]
+    ranks.sort(reverse=True)
+    return ranks
 
 
 def straight(ranks):
@@ -96,4 +98,4 @@ def test():
     return 'tests pass'
 
 
-print test()
+# print test()
