@@ -83,6 +83,18 @@ def test():
     sf = "6C 7C 8C 9C TC".split()  # straight flush
     fk = "9D 9H 9S 9C 7D".split()  # four of a kind
     fh = "TD TC TH 7C 7D".split()  # full house
+    tp = "5S 5D 9H 9C 6S".split()  # two pairs
+
+    fk_ranks = card_ranks(fk)
+    tp_ranks = card_ranks(tp)
+
+    assert kind(4, fk_ranks) == 9
+    assert kind(3, fk_ranks) is None
+    assert kind(2, fk_ranks) is None
+    assert kind(1, fk_ranks) == 7
+
+    assert two_pair(fk_ranks) is None
+    assert two_pair(tp_ranks) == (9, 5)
 
     assert straight([9, 8, 7, 6, 5]) is True
     assert straight([9, 8, 8, 6, 5]) is False
