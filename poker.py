@@ -20,6 +20,20 @@ def hand_rank(hand):
         return (8, max(ranks))
     elif kind(4, ranks):
         return (7, kind(4, ranks), kind(1, ranks))
+    elif kind(3, ranks) and kind(2, ranks):
+        return (6, kind(3, ranks), kind(2, ranks))
+    elif flush(hand):
+        return (5, ranks)
+    elif straight(ranks):
+        return (4, max(ranks))
+    elif kind(3, ranks):
+        return (3, kind(3, ranks), ranks)
+    elif two_pair(ranks):
+        return (2, two_pair(ranks), kind(1, ranks))
+    elif kind(2, ranks):
+        return (1, kind(2, ranks), ranks)
+    else:
+        return (0, ranks)
 
 
 def card_ranks(hand):
@@ -48,6 +62,13 @@ def kind(type, ranks):
     Return type of a kind number.
     '''
     return 0
+
+
+def two_pair(ranks):
+    '''
+    if there is a two pair, this function returns their corresponding ranks as a tuple.
+    '''
+    return None
 
 
 def test():
