@@ -62,18 +62,25 @@ def flush(hand):
     return suits.count(suits[0]) == len(suits)
 
 
-def kind(type, ranks):
+def kind(kind_type, ranks):
     '''
-    Return type of a kind number.
+    Return the first rank that this hand has exactly n of.
+    Return None if there is no n-of-a-kind in the hand.
     '''
-    return 0
+    for rank in ranks:
+        if ranks.count(rank) == kind_type:
+            return rank
 
 
 def two_pair(ranks):
     '''
-    if there is a two pair, this function returns their corresponding ranks as a tuple.
+    If there are two pair, return the two ranks as a
+    tuple: (highest, lowest); otherwise return None.
     '''
-    return None
+    high_pair = kind(2, ranks)
+    low_pair = kind(2, list(reversed(ranks)))
+    if high_pair and low_pair and high_pair != low_pair:
+        return high_pair, low_pair
 
 
 def test():
