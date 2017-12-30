@@ -40,74 +40,34 @@ def allmax(iterable, key=None):
 
 def hand_rank(hand):
     '''
-    Return a value indicating the ranking of a hand.
+    Return a value indicating how high the hand ranks.
+    counts is the count of each rank; ranks lists corresponding ranks.
+    E.g. '7 T 7 9 7' => counts = (3, 1, 1); ranks = (7, 10, 9)
+
     '''
-    ranks = card_ranks(hand)
-    if straight(ranks) and flush(hand):
-        return (8, max(ranks))
-    elif kind(4, ranks):
-        return (7, kind(4, ranks), kind(1, ranks))
-    elif kind(3, ranks) and kind(2, ranks):
-        return (6, kind(3, ranks), kind(2, ranks))
-    elif flush(hand):
-        return (5, ranks)
-    elif straight(ranks):
-        return (4, max(ranks))
-    elif kind(3, ranks):
-        return (3, kind(3, ranks), ranks)
-    elif two_pair(ranks):
-        return (2, two_pair(ranks), kind(1, ranks))
-    elif kind(2, ranks):
-        return (1, kind(2, ranks), ranks)
-    else:
-        return (0, ranks)
+    groups = group(['--23456789TJQKA'.index(r) for r, s in hand])
+    counts, ranks = unzip(groups)
+    if ranks == (14, 5, 4, 3, 2):
+        ranks = (5, 4, 3, 2, 1)
+    straight = len(ranks) == 5 and max(ranks) - min(ranks) == 4
+    flush = len(set([s for r, s in hand])) == 1
+    return (9 if (5, ) == counts else 8 if straight and flush else 7
+            if (4, 1) == counts else 6 if (3, 2) == counts else 5
+            if flush else 4 if straight else 3 if (3, 1, 1) == counts else 2
+            if (2, 2, 1) == counts else 1
+            if (2, 1, 1, 1) == counts else 0), ranks
 
 
-def card_ranks(hand):
+def group(items):
     '''
-    Return a list of the ranks, sorted with higher first.
+    Return a list of [(count, x)...], highest count first, then highest x first.
     '''
-    ranks = ['--23456789TJQKA'.index(r) for r, s in hand]
-    ranks.sort(reverse=True)
-    return [5, 4, 3, 2, 1] if ranks == [14, 5, 4, 3, 2] else ranks
+    groups = [(items.count(x), x) for x in set(items)]
+    return sorted(groups, reverse=True)
 
 
-def straight(ranks):
-    '''
-    Return True if the ordered ranks form a 5-card straight.
-    '''
-    # return all(ranks[i] == ranks[i + 1] + 1 for i in range(len(ranks) - 1))
-    return max(ranks) - min(ranks) == 4 and len(set(ranks)) == 5
-
-
-def flush(hand):
-    '''
-    Return True if all the cards have the same suit.
-    '''
-    suits = [s for r, s in hand]
-    # return len(set(suits)) == 1
-    return suits.count(suits[0]) == len(suits)
-
-
-def kind(kind_type, ranks):
-    '''
-    Return the first rank that this hand has exactly n of.
-    Return None if there is no n-of-a-kind in the hand.
-    '''
-    for rank in ranks:
-        if ranks.count(rank) == kind_type:
-            return rank
-
-
-def two_pair(ranks):
-    '''
-    If there are two pair, return the two ranks as a
-    tuple: (highest, lowest); otherwise return None.
-    '''
-    high_pair = kind(2, ranks)
-    low_pair = kind(2, list(reversed(ranks)))
-    if high_pair and low_pair and high_pair != low_pair:
-        return high_pair, low_pair
+def unzip(pairs):
+    return zip(*pairs)
 
 
 def test():
@@ -123,26 +83,6 @@ def test():
     ah = "AS 2S 3S 4S 6C".split()  # A high
     sh = "2S 3S 4S 6D 7D".split()  # 7 high
 
-    fk_ranks = card_ranks(fk)
-    tp_ranks = card_ranks(tp)
-
-    assert kind(4, fk_ranks) == 9
-    assert kind(3, fk_ranks) is None
-    assert kind(2, fk_ranks) is None
-    assert kind(1, fk_ranks) == 7
-
-    assert two_pair(fk_ranks) is None
-    assert two_pair(tp_ranks) == (9, 5)
-
-    assert straight([9, 8, 7, 6, 5]) is True
-    assert straight([9, 8, 8, 6, 5]) is False
-    assert flush(sf) is True
-    assert flush(fk) is False
-
-    assert card_ranks(sf) == [10, 9, 8, 7, 6]
-    assert card_ranks(fk) == [9, 9, 9, 9, 7]
-    assert card_ranks(fh) == [10, 10, 10, 7, 7]
-
     assert poker([sf, fk, fh]) == [sf]
     assert poker([fk, fh]) == [fk]
     assert poker([fh, fh]) == [fh, fh]
@@ -151,9 +91,9 @@ def test():
     assert poker([s1, s2, ah, sh]) == [s2]
     assert poker([s1, ah, sh]) == [s1]
 
-    assert hand_rank(sf) == (8, 10)
-    assert hand_rank(fk) == (7, 9, 7)
-    assert hand_rank(fh) == (6, 10, 7)
+    assert hand_rank(sf) == (8, (10, 9, 8, 7, 6))
+    assert hand_rank(fk) == (7, (9, 7))
+    assert hand_rank(fh) == (6, (10, 7))
 
     return 'tests pass'
 
