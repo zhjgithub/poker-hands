@@ -38,6 +38,17 @@ def allmax(iterable, key=None):
     return result
 
 
+count_rankings = {
+    (5, ): 10,
+    (4, 1): 7,
+    (3, 2): 6,
+    (3, 1, 1): 3,
+    (2, 2, 1): 2,
+    (2, 1, 1, 1): 1,
+    (1, 1, 1, 1, 1): 0
+}
+
+
 def hand_rank(hand):
     '''
     Return a value indicating how high the hand ranks.
@@ -51,11 +62,7 @@ def hand_rank(hand):
         ranks = (5, 4, 3, 2, 1)
     straight = len(ranks) == 5 and max(ranks) - min(ranks) == 4
     flush = len(set([s for r, s in hand])) == 1
-    return (9 if (5, ) == counts else 8 if straight and flush else 7
-            if (4, 1) == counts else 6 if (3, 2) == counts else 5
-            if flush else 4 if straight else 3 if (3, 1, 1) == counts else 2
-            if (2, 2, 1) == counts else 1
-            if (2, 1, 1, 1) == counts else 0), ranks
+    return max(count_rankings[counts], 5 * flush + 4 * straight), ranks
 
 
 def group(items):
@@ -91,7 +98,7 @@ def test():
     assert poker([s1, s2, ah, sh]) == [s2]
     assert poker([s1, ah, sh]) == [s1]
 
-    assert hand_rank(sf) == (8, (10, 9, 8, 7, 6))
+    assert hand_rank(sf) == (9, (10, 9, 8, 7, 6))
     assert hand_rank(fk) == (7, (9, 7))
     assert hand_rank(fh) == (6, (10, 7))
 
