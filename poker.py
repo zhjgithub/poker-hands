@@ -91,6 +91,10 @@ def test():
     fk = "9D 9H 9S 9C 7D".split()  # four of a kind
     fh = "TD TC TH 7C 7D".split()  # full house
     tp = "5S 5D 9H 9C 6S".split()  # two pairs
+    s1 = "AS 2S 3S 4S 5C".split()  # A-5 straight
+    s2 = "2C 3C 4C 5S 6S".split()  # 2-6 straight
+    ah = "AS 2S 3S 4S 6C".split()  # A high
+    sh = "2S 3S 4S 6D 7D".split()  # 7 high
 
     fk_ranks = card_ranks(fk)
     tp_ranks = card_ranks(tp)
@@ -117,6 +121,8 @@ def test():
     assert poker([fh, fh]) == fh
     assert poker([fh]) == fh
     assert poker([sf] + 99 * [fh]) == sf
+    assert poker([s1, s2, ah, sh]) == s2
+    assert poker([s1, ah, sh]) == s1
 
     assert hand_rank(sf) == (8, 10)
     assert hand_rank(fk) == (7, 9, 7)
