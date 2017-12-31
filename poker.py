@@ -8,6 +8,8 @@ from shuffle import shuffle
 
 ALL_RANKS = '23456789TJQKA'
 MY_DECK = [r + s for r in ALL_RANKS for s in 'SHDC']
+BLACK_CARDS = [''.join(item) for item in itertools.product(ALL_RANKS, 'SC')]
+RED_CARDS = [''.join(item) for item in itertools.product(ALL_RANKS, 'HD')]
 
 
 def deal(numhands, n=5, deck=MY_DECK):
@@ -33,13 +35,9 @@ def best_wild_hand(hand):
     black_jokers = None
     red_jokers = None
     if wild_black_count:
-        black_jokers = itertools.filterfalse(lambda x: x in hand, [
-            ''.join(card) for card in itertools.product(ALL_RANKS, 'SC')
-        ])
+        black_jokers = itertools.filterfalse(lambda x: x in hand, BLACK_CARDS)
     if wild_red_count:
-        red_jokers = itertools.filterfalse(lambda x: x in hand, [
-            ''.join(card) for card in itertools.product(ALL_RANKS, 'HD')
-        ])
+        red_jokers = itertools.filterfalse(lambda x: x in hand, RED_CARDS)
 
     if wild_black_count and wild_red_count:
         product_jokers = itertools.product(black_jokers, red_jokers)
