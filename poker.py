@@ -6,10 +6,11 @@ Poker hands
 import itertools
 from shuffle import shuffle
 
-mydeck = [r + s for r in '23456789TJQKA' for s in 'SHDC']
+ALL_RANKS = '23456789TJQKA'
+MY_DECK = [r + s for r in ALL_RANKS for s in 'SHDC']
 
 
-def deal(numhands, n=5, deck=mydeck):
+def deal(numhands, n=5, deck=MY_DECK):
     '''
     Shuffle the deck and deal out numhands n-cards hands.
     '''
@@ -33,11 +34,11 @@ def best_wild_hand(hand):
     red_jokers = None
     if wild_black_count:
         black_jokers = itertools.filterfalse(lambda x: x in hand, [
-            ''.join(card) for card in itertools.product('23456789TJQKA', 'SC')
+            ''.join(card) for card in itertools.product(ALL_RANKS, 'SC')
         ])
     if wild_red_count:
         red_jokers = itertools.filterfalse(lambda x: x in hand, [
-            ''.join(card) for card in itertools.product('23456789TJQKA', 'HD')
+            ''.join(card) for card in itertools.product(ALL_RANKS, 'HD')
         ])
 
     if wild_black_count and wild_red_count:
@@ -78,7 +79,7 @@ def allmax(iterable, key=None):
     return result
 
 
-count_rankings = {
+COUNT_RANKINGS = {
     (5, ): 10,
     (4, 1): 7,
     (3, 2): 6,
@@ -102,7 +103,7 @@ def hand_rank(hand):
         ranks = (5, 4, 3, 2, 1)
     straight = len(ranks) == 5 and max(ranks) - min(ranks) == 4
     flush = len(set([s for r, s in hand])) == 1
-    return max(count_rankings[counts], 5 * flush + 4 * straight), ranks
+    return max(COUNT_RANKINGS[counts], 5 * flush + 4 * straight), ranks
 
 
 def group(items):
