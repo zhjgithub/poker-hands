@@ -22,6 +22,40 @@ def best_hand(hand):
     return max(itertools.combinations(hand, 5), key=hand_rank)
 
 
+def best_wild_hand(hand):
+    "Try all values for jokers in all 5-card selections."
+    wild_black_count = hand.count('?B')
+    wild_red_count = hand.count('?R')
+    hand = list(itertools.filterfalse(lambda x: x == '?B', hand))
+    hand = list(itertools.filterfalse(lambda x: x == '?R', hand))
+    all_possible_hands = None
+    black_jokers = None
+    red_jokers = None
+    if wild_black_count:
+        black_jokers = itertools.filterfalse(lambda x: x in hand, [
+            ''.join(card) for card in itertools.product('23456789TJQKA', 'SC')
+        ])
+    if wild_red_count:
+        red_jokers = itertools.filterfalse(lambda x: x in hand, [
+            ''.join(card) for card in itertools.product('23456789TJQKA', 'HD')
+        ])
+
+    if wild_black_count and wild_red_count:
+        product_jokers = itertools.product(black_jokers, red_jokers)
+        all_possible_hands = list(
+            map(lambda x: hand + list(x), product_jokers))
+    elif wild_black_count:
+        all_possible_hands = list(map(lambda x: hand + [x], black_jokers))
+    elif wild_red_count:
+        all_possible_hands = list(map(lambda x: hand + [x], red_jokers))
+    else:
+        all_possible_hands = [hand]
+
+    all_combinations = itertools.chain(*map(
+        lambda x: list(itertools.combinations(x, 5)), all_possible_hands))
+    return max(all_combinations, key=hand_rank)
+
+
 def poker(hands):
     '''
     Return a list of winning hands: poker([hand,...]) => hand
@@ -127,6 +161,23 @@ def test_best_hand():
     print('test_best_hand passes')
 
 
+def test_best_wild_hand():
+    '''
+    Test best wild hand.
+    '''
+    assert (sorted(best_wild_hand("6C 7C 8C 9C TC 5C ?B".split())) == [
+        '7C', '8C', '9C', 'JC', 'TC'
+    ])
+    assert (sorted(best_wild_hand("TD TC 5H 5C 7C ?R ?B".split())) == [
+        '7C', 'TC', 'TD', 'TH', 'TS'
+    ])
+    assert (sorted(best_wild_hand("JD TC TH 7C 7D 7S 7H".split())) == [
+        '7C', '7D', '7H', '7S', 'JD'
+    ])
+    print('test_best_wild_hand passes')
+
+
 if __name__ == '__main__':
     print(test())
     test_best_hand()
+    test_best_wild_hand()
