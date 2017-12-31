@@ -3,7 +3,7 @@
 Poker hands
 '''
 
-import random
+from shuffle import shuffle
 
 mydeck = [r + s for r in '23456789TJQKA' for s in 'SHDC']
 
@@ -12,7 +12,7 @@ def deal(numhands, n=5, deck=mydeck):
     '''
     Shuffle the deck and deal out numhands n-cards hands.
     '''
-    random.shuffle(deck)
+    shuffle(deck)
     return [deck[n * i:n * (i + 1)] for i in range(numhands)]
 
 
@@ -105,4 +105,5 @@ def test():
     return 'tests pass'
 
 
-print(test())
+if __name__ == '__main__':
+    print(test())
