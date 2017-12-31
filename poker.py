@@ -26,33 +26,29 @@ def best_hand(hand):
 
 
 def best_wild_hand(hand):
-    "Try all values for jokers in all 5-card selections."
-    wild_black_count = hand.count('?B')
-    wild_red_count = hand.count('?R')
-    hand = list(itertools.filterfalse(lambda x: x == '?B', hand))
-    hand = list(itertools.filterfalse(lambda x: x == '?R', hand))
-    all_possible_hands = None
-    black_jokers = None
-    red_jokers = None
-    if wild_black_count:
-        black_jokers = itertools.filterfalse(lambda x: x in hand, BLACK_CARDS)
-    if wild_red_count:
-        red_jokers = itertools.filterfalse(lambda x: x in hand, RED_CARDS)
+    '''
+    Try all values for jokers in all 5-card selections.
+    '''
 
-    if wild_black_count and wild_red_count:
-        product_jokers = itertools.product(black_jokers, red_jokers)
-        all_possible_hands = list(
-            map(lambda x: hand + list(x), product_jokers))
-    elif wild_black_count:
-        all_possible_hands = list(map(lambda x: hand + [x], black_jokers))
-    elif wild_red_count:
-        all_possible_hands = list(map(lambda x: hand + [x], red_jokers))
-    else:
-        all_possible_hands = [hand]
+    def replacements(card, hand):
+        '''
+        Return a list of the possible replacements for a card.
+        There will be more than one only for wild cards.
+        '''
+        if card == '?B':
+            return list(
+                itertools.filterfalse(lambda x: x in hand, BLACK_CARDS))
+        elif card == '?R':
+            return list(itertools.filterfalse(lambda x: x in hand, RED_CARDS))
+        else:
+            return [card]
 
-    all_combinations = itertools.chain(*map(
-        lambda x: list(itertools.combinations(x, 5)), all_possible_hands))
-    return max(all_combinations, key=hand_rank)
+    hands = set(
+        best_hand(item)
+        for item in itertools.product(
+            *map(lambda x: replacements(x, hand), hand)))
+    best = max(hands, key=hand_rank)
+    return best
 
 
 def poker(hands):
